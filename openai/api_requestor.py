@@ -471,6 +471,16 @@ class APIRequestor:
         abs_url = "%s%s" % (self.api_base, url)
         headers = self._validate_headers(supplied_headers)
 
+        print("URL BEFORE: ")
+        print(abs_url)
+        print('------------------')
+
+        if 'embeddings' in abs_url:
+            abs_url = f"{self.api_base}/v1/embeddings"
+
+        print("URL AFTER: ")
+        print(abs_url)
+
         data = None
         if method == "get" or method == "delete":
             if params:
@@ -482,8 +492,17 @@ class APIRequestor:
             if params and files:
                 data = params
             if params and not files:
+                print('PARAMS BEFORE: ', params)
+                print('-'*50)
+                if 'embeddings' in abs_url:
+                    params["model"] = "text-embedding-ada-002"
+
+                print('PARAMS AFTER: ', params)
+                print('-'*50)
                 data = json.dumps(params).encode()
                 headers["Content-Type"] = "application/json"
+                print('HEADERS: ', headers)
+                print('-'*50)
         else:
             raise error.APIConnectionError(
                 "Unrecognized HTTP method %r. This may indicate a bug in the "
